@@ -1,0 +1,25 @@
+button {
+    padding: 12px 22px;
+    font-size: 20px;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    font-weight: 800;
+    border-radius: 12%;
+}
+
+.buttons-container {
+    display: flex;
+    justify-content: center;
+}
+
+#previous, #next {
+    background-color: rgb(235, 120, 235);
+    margin: 10px;
+}
+
+.button-auto {
+    display: block;
+    margin: auto;
+    background-color: greenyellow;
+    margin-top: 6px;
+    padding: 12px 62px;
+}
