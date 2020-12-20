@@ -1,0 +1,1 @@
+sass --watch Gallery.scss Gallery.css

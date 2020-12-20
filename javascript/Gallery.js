@@ -1,20 +1,33 @@
+// Here I have 8 Sections :
+/**
+ * 1. Setting Up (s-up)
+ * 2. Previous Button (p-reb)
+ * 3. Next Button (n-eb)
+ * 4. Auto Button (a-ub)
+ * 5. Pop-up 'OK' Button (p-opok)
+ * 6. Pop-up 'STOP' Button (p-opstop)
+ 
+ * 8. Photo Choice (p-hocho)
+ * 
+ * (9). 'choose()' function (c-hooss)
+ */
 
 $(function () {
 
-    let photosList = document.getElementsByTagName('img'); // list of images to manipulate
+    /*------------------- SETTING UP (sup) ---------------------------------*/
+    let photosList = document.getElementById('images-showcase').children; // list of images to manipulate
     let container = document.getElementById("image-container");
 
+    let prevChoice;
     let count = 0; // Variable that stores the index of the photo to be presented
-    container.append(photosList[count].cloneNode());
-    
-    $("#image-container img:first-child").addClass("image-main");
+    viewChosenPhoto(photosList, count, container);
+
     $(photosList[count]).addClass("red");
 
-    let feedback = false; // Variable used to send to auto mode's or ok-button mode's setInterval method
+    let isPrevOrNextPressed = false; // Variable used to send to auto mode's or ok-button mode's setInterval method
                           // a message, that 'previous' or 'next' button was pressed, so that the auto or ok-button mode to stop.
 
-    /*-------------------PREVIOUS BUTTON---------------------------------*/
-
+    /*------------------- PREVIOUS BUTTON (preb) ---------------------------------*/
     $("#previous").click(function () {
 
         container.firstChild.remove();
@@ -26,20 +39,18 @@ $(function () {
             $(photosList[0]).removeClass("red");
         }
 
-        container.append(photosList[count].cloneNode());
-        $("#image-container img:first-child").addClass("image-main");
+        viewChosenPhoto(photosList, count, container);
         
         $(photosList[count + 1]).removeClass("red");
         $(photosList[count]).addClass("red");
 
-        feedback = true;
+        isPrevOrNextPressed = true;
         $(".button-auto").removeAttr("disabled");
         prevChoice = count;
 
     });
 
-    /*---------------------NEXT BUTTON---------------------------------*/
-
+    /*--------------------- NEXT BUTTON (neb) ---------------------------------*/
     $("#next").click(function () {
 
         container.firstChild.remove();
@@ -51,31 +62,30 @@ $(function () {
             $(photosList[photosList.length - 1]).removeClass("red");
         }
 
-        container.append(photosList[count].cloneNode());
-        $("#image-container img:first-child").addClass("image-main");
-
+        viewChosenPhoto(photosList, count, container);
+        
         let index = count - 1;
         if (index === -1) index = photosList.length - 1;
 
         $(photosList[index]).removeClass("red");
         $(photosList[count]).addClass("red");
 
-        feedback = true;
+        isPrevOrNextPressed = true;
         $(".button-auto").removeAttr("disabled");
         prevChoice = count;
 
     });
 
-    /*---------------------AUTO BUTTON---------------------------------*/
-
+    /*--------------------- AUTO BUTTON (aub) ---------------------------------*/
     $(".button-auto").click(function () {
 
-        feedback = false;
+        isPrevOrNextPressed = false;
         $(".button-auto").attr("disabled", "true");
 
+        // Loop with time interval delay, in between iterations
         let timerId = setInterval(function () {
 
-            if (feedback === true) {
+            if (isPrevOrNextPressed === true) {
                 count--;
                 clearInterval(timerId);
             }
@@ -89,40 +99,38 @@ $(function () {
                 $(photosList[photosList.length - 1]).removeClass("red");
             }
 
-            container.append(photosList[count].cloneNode());
-            $("#image-container img:first-child").addClass("image-main-clearBorder");
+            viewChosenPhoto(photosList, count, container);
             
             prevChoice = count;
 
             let index = count - 1;
             if (index === -1) index = photosList.length - 1;
-
+        
             $(photosList[index]).removeClass("red");
             $(photosList[count]).addClass("red");
 
             if (count === 5) {
                 clearInterval(timerId);
-                myFunction();
+                togglePopUp();
             }
-            
-
+    
         }, 3000);
-
+        
     });
 
-    /*--------------------- POPUP OK-BUTTON -------------------------*/
-
+    /*--------------------- POPUP OK-BUTTON (popok) -------------------------*/
     $('.popup-ok').click(function() {
 
         var popup = document.getElementById("myPopup");
         popup.classList.toggle("show");
 
-        feedback = false;
+        isPrevOrNextPressed = false;
         $(".button-auto").attr("disabled", "true");
 
+        // Loop with time interval delay, in between iterations
         let timerId = setInterval(function () {
 
-            if (feedback === true) {
+            if (isPrevOrNextPressed === true) {
                 count--;
                 clearInterval(timerId);
             }
@@ -136,29 +144,26 @@ $(function () {
                 $(photosList[photosList.length - 1]).removeClass("red");
             }
 
-            container.append(photosList[count].cloneNode());
-            $("#image-container img:first-child").addClass("image-main-clearBorder");
-
+            viewChosenPhoto(photosList, count, container);
+            
             prevChoice = count;
 
             let index = count - 1;
             if (index === -1) index = photosList.length - 1;
-
+        
             $(photosList[index]).removeClass("red");
             $(photosList[count]).addClass("red");
 
             if (count === 5) {
                 clearInterval(timerId);
-                myFunction();
+                togglePopUp();
             }
-        
-
+    
         }, 3000);
 
     });
 
-    /*--------------------- POPUP STOP-BUTTON -------------------------*/
-
+    /*--------------------- POPUP STOP-BUTTON (popstop) -------------------------*/
     $('.popup-stop').click(function() {
         
         var popup = document.getElementById("myPopup");
@@ -168,21 +173,11 @@ $(function () {
 
     });
 
-    /*-------------- POPUP FUNCTIONALITY ----------------------------*/
-
-    function myFunction() {
-        var popup = document.getElementById("myPopup");
-        popup.classList.toggle("show");
-    }
-
-    
-    
-    /*----------------PHOTO CHOICE----------------------------------*/
+    /*---------------- PHOTO CHOICE (phocho) ----------------------------------*/
     // Extra functionality to press specific photos.
 
     let choice;
-    let prevChoice;
-
+ 
     $("#0").click(function() {
         choice = 0;
         choose();
@@ -213,26 +208,24 @@ $(function () {
         choose();
     });
 
+    // chooss
     function choose() {
         
         count = choice;
 
         container.firstChild.remove();
 
-        container.append(photosList[count].cloneNode());
-        $("#image-container img:first-child").addClass("image-main-clearBorder");
+        viewChosenPhoto(photosList, count, container);
         
         if (prevChoice === undefined) $(photosList[0]).removeClass("red");
         else $(photosList[prevChoice]).removeClass("red");
 
         $(photosList[count]).addClass("red");
 
-        feedback = true;
+        isPrevOrNextPressed = true;
         $(".button-auto").removeAttr("disabled");
         
         prevChoice = choice;
     }
-
-
     
 });
